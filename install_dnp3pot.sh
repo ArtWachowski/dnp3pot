@@ -34,7 +34,7 @@ WantedBy=multi-user.target
 
 EOF
 
-cat > /etc/rsyslog.conf << EOF
+cat >> /etc/rsyslog.conf << EOF
 
 module(load="imuxsock") # provides support for local system logging
 module(load="imklog" permitnonkernelfacility="on" )
@@ -45,18 +45,6 @@ input(type="imfile"
       Tag="DNP3"
       Severity="info"
       )
-
-input(type="imfile"
-      File="/var/log/ufw.log"
-      Tag="UFW"
-      Severity="error")
-
-#*.* @$server_ip:$server_port
-
-$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
-$RepeatedMsgReduction on
-$WorkDirectory /var/spool/rsyslog
-$IncludeConfig /etc/rsyslog.d/50*.conf
 
 EOF
 
