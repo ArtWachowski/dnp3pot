@@ -15,7 +15,7 @@ apt-get install scapy apt install python-pip -y
 pip install chardet
 
 cd /
-wget https://github.com/ArtWachowski/dnp3pot.git
+git clone https://github.com/ArtWachowski/dnp3pot.git
 
 cat > /etc/systemd/system/dnp3pot.service <<EOF
 [Unit]
