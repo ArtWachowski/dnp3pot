@@ -77,6 +77,13 @@ def new(conn,addr):
     
     msg = conn.recv(2048)
     
+    try:
+	conn.send(banner)
+	time.sleep(1.02)
+	conn.close()
+    except TypeError:
+	conn.close()
+
     if not len(str(msg)) == 0:
 	encoding = chardet.detect(msg)['encoding']
         #print('Raw data recieved from {} rawdata: {} encoding: {}'.format(addr,msg,encoding))
@@ -89,12 +96,7 @@ def new(conn,addr):
 	conn.close()
 	return
  
-    try:
-	conn.send(banner)
-	time.sleep(1.02)
-	conn.close()
-    except TypeError:
-	conn.close()
+    
 
 
 #DNP3 SCAPY FILTER 
@@ -114,7 +116,7 @@ def packet_callback(pkt):
 	    #print('DNP3 application layer detected - No Payload src {} dport {} dst {} sval {} chcval {} DFCval {}'.format(pkt[IP].src, pkt[IP].dport, pkt[IP].dst,pkt.START,pkt.LENGTH,pkt.CONTROL.FCV))
 
 	if not p == 'No payload': 
-            logger.info('DNP3 application layer detected - Payload: {} src {} dport {} dst {} sval {} chcval {} DFCval {} '.format(p, pkt[IP].src, pkt[IP].dport, pkt[IP].dst,pkt.START,pkt.LENGTH,pkt.CONTROL.FCV))
+            logger.info('DNP3 application layer detected - Payload: {} src {} dport {} dst {} sval {} chcval {}'.format(p, pkt[IP].src, pkt[IP].dport, pkt[IP].dst,pkt.START,pkt.LENGTH))
             #print('DNP3 application layer detected - Payload:{} src {} dport {} dst {} sval {} chcval {} DFCval {}'.format(p, pkt[IP].src, pkt[IP].dport, pkt[IP].dst,pkt.START,pkt.LENGTH,pkt.CONTROL.FCV))
                      
 	              
@@ -126,13 +128,13 @@ def packet_callback(pkt):
 
         ''' Function codes check '''
 
-        if (pkt.haslayer(DNP3_Lib.DNP3ApplicationResponse) 
-            or pkt.haslayer(DNP3_Lib.DNP3ApplicationRequest)):
+        if (pkt.haslayer(DNP3_Lib.DNP3ApplicationRequest)):
 
             if pkt.FUNC_CODE is not None:
                 if (pkt.FUNC_CODE >= 0 and pkt.FUNC_CODE <= 33):
                     logger.critical('\n DNP3 Function code {} detected {} ----{}----> {}:\n'.format(pkt.FUNC_CODE, pkt[IP].src, pkt[IP].dport, pkt[IP].dst))
 		    #print('detected function code0: '+ str(pkt.FUNC_CODE))
+		    send(response)
 
 		if (pkt.FUNC_CODE > 33 and pkt.FUNC_CODE < 129):
                     logger.critical('\n DNP3 OUT OF RANGE Function code {} detected {} ----{}----> {}:\n'.format(pkt.FUNC_CODE, pkt[IP].src, pkt[IP].dport, pkt[IP].dst))
@@ -141,7 +143,8 @@ def packet_callback(pkt):
 		if (pkt.FUNC_CODE >= 129 and pkt.FUNC_CODE <= 131):
                     logger.critical('\n DNP3 Function code {} detected {} ----{}----> {}:\n'.format(pkt.FUNC_CODE, pkt[IP].src, pkt[IP].dport, pkt[IP].dst))
 		    #print('detected function code2: '+ str(pkt.FUNC_CODE))
-        	    	
+        	    send(response)
+	
                 if (pkt.FUNC_CODE < 0 and pkt.FUNC_CODE > 131):
                     logger.critical('\n DNP3 OUT OF RANGE Function code {} detected {} ----{}----> {}:\n'.format(pkt.FUNC_CODE, pkt[IP].src, pkt[IP].dport, pkt[IP].dst))
 		    #print('detected function code3: '+ str(pkt.FUNC_CODE))
@@ -170,13 +173,13 @@ if __name__ == "__main__":
     Ip = os.popen('ip addr show eth0').read().split("inet ")[1].split("/")[0]  
     bind_layers(TCP, DNP3, dport = DNP3port)
     bind_layers(TCP, DNP3, sport = DNP3port)
- 	
+    
+    global response	
     global banner
-    #banner = '\x05\x64\x0a\x44\x03\x00\x04\x00\x7c\xae\xe6\xf7\x82\x10\x00\x4f\xbd' #Unsolicited Message Response 
-    banner = IP()/TCP()/DNP3()/'05640A4400040100595EC3C58100005593'
-
-    #banner = '\x05\x64\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-    #banner = '\x05\x64\x0b\xc4\x03\x00\x04\x00\xef\x7a\xc1\xc1\x01\x3c\x02\x06\xb5\x76'
+    banner = '\x05\x64\x0A\x00\x00\x00\x00\x55\x2F\xEE\xDA\x82\x00\x00\xF5\xDF' 
+    
+    response = IP()/TCP()/'\x05\x64\x0A\x00\x00\x00\x00\x55\x2F\xEE\xDA\x82\x00\x00\xF5\xDF'
+    
 
     try:
         listen(Ip,DNP3port)
@@ -185,5 +188,7 @@ if __name__ == "__main__":
 	s.close()
 	p.join()
         sys.exit(0)
+
+        
 
         
