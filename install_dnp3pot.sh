@@ -11,7 +11,8 @@ server_ip=$1
 server_port=$2
 
 apt-get update
-apt-get install scapy apt install python-pip -y
+apt-get install scapy 
+apt install python-pip -y
 pip install chardet
 
 cd /
