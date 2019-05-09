@@ -24,7 +24,7 @@ After=network.target
 
 [Service]
 User=root
-WatchdogSec=10000
+WatchdogSec=1000
 #RuntimeMaxSec=1000
 Environment=LANG=en_US.UTF-8,LC_ALL=en_US.UTF-8
 ExecStart=/usr/bin/python /dnp3pot/DNP3pot.py
