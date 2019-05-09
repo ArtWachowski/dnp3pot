@@ -1,2 +1,2 @@
 # dnp3pot
-Dnp3 Honepot
+Dnp3 Honeypot
