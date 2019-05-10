@@ -8,7 +8,7 @@ Alternatively, please remove the rsyslog settings from the deployment script.
 
 Logs can be read localy with a command "tail -f /var/log/dnp3pot.log &"
 
-Instalation procedure:
+Installation procedure:
 1. Setup new cloud or local Linux image (tested on Kali 19 and Ubuntu 16.04)
 2. Copy content of install_dnp3pot.sh
 3. Issue "cat > installme.sh" in your linux termainal
