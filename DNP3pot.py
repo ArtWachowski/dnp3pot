@@ -102,8 +102,7 @@ def new(conn,addr):
 #DNP3 SCAPY FILTER 
 	
 def packet_callback(pkt):
-    
-    
+        
     if pkt.haslayer(IP) and pkt[IP].dport == DNP3port and pkt[IP].dst == Ip and pkt.haslayer(DNP3):
 	 
 	if pkt[TCP].payload:
