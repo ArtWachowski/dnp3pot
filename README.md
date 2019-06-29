@@ -1,7 +1,8 @@
 # dnp3pot
 Dnp3 Honeypot installation instructions.
 
-Prerequisites: You need to have logging/historian central server, IP and Port number (UDP)
+Prerequisites: You'll need to have logging/historian central server, IP and Port number ready.
+(Script was tested with Splunk)
 
 IF you dont require a central server, please insert any ip and any port number in order to run the script.
 Alternatively, please remove the rsyslog settings from the deployment script. 
